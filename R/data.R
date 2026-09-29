@@ -1,0 +1,12 @@
+#' Free throw results
+#'
+#' The number of free throws made in each of 50 practice sessions.
+#' In every session the player took 10 shots.
+#'
+#' @format A data frame with 50 rows and 2 columns:
+#' \describe{
+#'   \item{session}{Session number, 1 to 50.}
+#'   \item{made}{Number of free throws made out of 10.}
+#' }
+#' @source Simulated for MATH 4753 Lab 5 using `rbinom(50, 10, 0.7)`.
+"freethrows"

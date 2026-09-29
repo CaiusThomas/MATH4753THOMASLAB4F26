@@ -1,0 +1,54 @@
+---
+title: "Lab5"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Lab5}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(MATH4753THOMASF26)
+```
+
+# The data
+
+`freethrows` holds the number of free throws made in each of 50 practice
+sessions, with 10 shots per session.
+
+```{r}
+head(freethrows)
+```
+
+# binFit(): does real data look binomial?
+
+In Lab 5 we only simulated from a known p. `binFit()` starts from observed
+data instead. It estimates p from the data, then compares the observed
+proportions to the binomial probabilities from `dbinom()`.
+
+```{r, fig.width = 6, fig.height = 4}
+fit = binFit(freethrows$made, n = 10)
+fit
+```
+
+# binSim(): simulation checked against dbinom()
+
+In Lab 5 Task 2 we ran `mybin()`, then called `dbinom()` separately and
+compared the numbers by hand. `binSim()` does both in one call. Here we
+simulate using the p estimated from the free throw data.
+
+```{r, fig.width = 6, fig.height = 4}
+sim = binSim(iter = 10000, n = 10, p = fit$p.hat)
+sim
+```
+
+The largest difference between the simulated and exact values is
+`r round(sim$max.difference, 4)`, so the simulation matches the exact
+binomial probabilities closely.
