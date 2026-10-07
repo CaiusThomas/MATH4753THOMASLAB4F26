@@ -1,0 +1,87 @@
+---
+title: "The Birthday Problem"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{The Birthday Problem}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "-OUT-")
+```
+
+```{r setup}
+library(MATH4753THOMASF26)
+``` 
+
+# 1. Mathematical Derivation
+We can assume $A$ to be the event that at least two people in a class of $n$ share a birthday.
+Each person's birthday is equally likely to be any of 365 days.
+
+**Sample space.** Each of the $n$ people has 365 possible birthdays, so by the
+multiplication rule
+$$|S| = 365 \times 365 \times \cdots  = 365^n.$$
+
+**Complement.** Let $\bar{A}$ be the event that all $n$ birthdays are different.
+The first person has 365 choices, the second has 364, and the $n$th has $365-n+1$:
+$$|\bar{A}| = 365 \times 364 \times \cdots \times (365-n+1) = \frac{365!}{(365-n)!} = {}^{365}P_n.$$
+
+**Probability.** Since all outcomes are equally likely,
+$$P(\bar{A}) = \frac{{}^{365}P_n}{365^n} = \frac{365!}{(365-n)!\,365^n}.$$
+
+By the complement rule,
+$$P(A) = 1 - P(\bar{A}) = 1 - \frac{365!}{(365-n)!\,365^n}, \quad n \le 365.$$
+
+
+# 2. Reformulation Using lfactorial and lchoose
+
+Since $\binom{365}{n} = \frac{365!}{n!\,(365-n)!}$, multiplying both sides by $n!$ gives
+$${}^{365}P_n = \frac{365!}{(365-n)!} = n!\binom{365}{n}.$$
+
+So
+$$P(\bar{A}) = \frac{n!\binom{365}{n}}{365^n}.$$
+
+Because $365!$ is too large for R to compute, we take the natural log of both sides.
+Logs turn products into sums and quotients into differences:
+$$\log P(\bar{A}) = \log(n!) + \log\binom{365}{n} - n\log(365).$$
+
+In R, $\log(n!)$ is `lfactorial(n)` and $\log\binom{365}{n}$ is `lchoose(365, n)`.
+Undoing the log with $\exp$ and using the complement rule:
+$$P(A) = 1 - \exp\left(\texttt{lfactorial}(n) + \texttt{lchoose}(365, n) - n\log(365)\right).$$
+
+```{r, fig.width = 7, fig.height = 4.5}
+n = 1:80
+p = birthday(n)
+plot(n, p, type = "l", lwd = 2, col = "blue",
+     xlab = "Class size (n)", ylab = "P(at least two share a birthday)",
+     main = "Probability of a Shared Birthday")
+abline(h = 0.5, lty = 2, col = "red")
+abline(v = 23, lty = 2, col = "gray")
+points(23, birthday(23), pch = 19, col = "red")
+```
+The probability passes 0.5 at n = 23 and is pretty close to 1 by n = 60.
+
+# 3. The Function Body
+
+```{r}
+birthday
+```
+```{r, eval=FALSE}
+function (n) 
+{
+   #The below section calculates the log of P(A-bar), the log of the chance no 
+   #one shares a birthday. We calculate it this way since R can't calculate 365!. 
+   log_p_none = lfactorial(n) + lchoose(365, n) - n * log(365)
+   
+   #The next section undoes the log to get P(A-bar) and {1-P(A-bar)} gets us 
+   #the likelihood at least 2 people share a birthday.
+   1 - exp(log_p_none)
+}
+```
+
+# 4. Results for n = 20 to 25
+```{r}
+birthday(n = 20:25)
+```
+The probability goes past 50% between n = 22 and n = 23, so in a class of 23 or more, a shared birthday is more likely than not.

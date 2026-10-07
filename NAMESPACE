@@ -2,6 +2,7 @@
 
 export(binFit)
 export(binSim)
+export(birthday)
 importFrom(grDevices,rainbow)
 importFrom(graphics,
   barplot,
