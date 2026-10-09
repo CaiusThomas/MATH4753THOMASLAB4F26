@@ -3,10 +3,17 @@
 export(binFit)
 export(binSim)
 export(birthday)
+export(myncurve)
 importFrom(grDevices,rainbow)
 importFrom(graphics,
+  abline,
   barplot,
   legend,
-  points
+  points,
+  polygon
 )
-importFrom(stats,dbinom)
+importFrom(stats,
+  dbinom,
+  dnorm,
+  pnorm
+)
